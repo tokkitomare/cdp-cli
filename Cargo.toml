@@ -10,6 +10,10 @@ readme = "README.md"
 keywords = ["cli", "cdp", "cdprogram", "useful"]
 categories = ["command-line-interface"]
 
+[[bin]]
+name = "cdp"
+path = "src/main.rs"
+
 [dependencies]
 clap = { version = "4.5.41", features = ["derive"] }
 regex = "1.11.1"

@@ -1,3 +1,3 @@
 fn main(){
-    cdp::cli_run().unwrap();
+    cdp_cli::cli_run().unwrap();
 }

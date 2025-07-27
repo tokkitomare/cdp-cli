@@ -62,7 +62,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "cdp"
+name = "cdp-cli"
 version = "0.1.0"
 dependencies = [
  "clap",

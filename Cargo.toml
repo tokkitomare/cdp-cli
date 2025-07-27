@@ -3,7 +3,13 @@ name = "cdp"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+license-file = "LICENSE"
 authors = ["tokkitomare"]
+description = "CDP - This CLI helps you quickly navigate to a directory and perform useful operations on it."
+repository = "https://github.com/tokkitomare/cdp-cli"
+readme = "README.md"
+keywords = ["cli", "cdp", "cdprogram", "useful"]
+categories = ["command-line-interface"]
 
 [dependencies]
 clap = { version = "4.5.41", features = ["derive"] }

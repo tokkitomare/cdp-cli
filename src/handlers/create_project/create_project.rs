@@ -1,4 +1,5 @@
 use crate::handlers::aliases::aliases::aliases;
+use crate::handlers::errors::{CliErr, ErrKind};
 use crate::types::Langs;
 use crate::utils::create_cdputils::create_cdputils;
 use std::process::Command;
@@ -8,25 +9,45 @@ macro_rules! create_project_default {
     ($dir:expr, $name:expr, $extension:literal, $write:expr, $alias:expr) => {{
         let mut path = PathBuf::from($dir);
         path.push($name);
-        fs::create_dir_all(&path).expect("Can't create dir");
+        fs::create_dir_all(&path)
+            .map_err(|e| {
+                CliErr::set_err(&e.to_string(), ErrKind::IoError)
+            })?;
 
         path.push(format!("main.{}", $extension));
-        let mut f = fs::File::create(&path).expect("Can't create file");
+        let mut f = fs::File::create(&path)
+            .map_err(|e| {
+                CliErr::set_err(&e.to_string(), ErrKind::IoError)
+            })?;
 
         writeln!(f, "{}", $write).unwrap();
 
         if let Some(alias) = $alias {
             aliases(format!("{}\\{}", $dir, $name), alias.clone())?;
-            println!("Success! You can now type `cdp general --vsc --alias \"{}\"` to open it on Visual Studio Code.", alias);
+            println!("Success! You can now type `cdp general --vsc \":{}\"` to open it on Visual Studio Code.", alias);
         } else {
             println!("Success! You can now type `cdp general --vsc \"{}\\{}\"` to open it on Visual Studio Code.", $dir, $name);
         }
     }};
 }
 
-pub fn create_project(lang: Langs, name: String, alias: Option<String>) -> Result<(), Box<dyn std::error::Error>> {
+macro_rules! response {
+    ($alias:expr, $dir:expr, $name:expr) => {
+        if let Some(alias) = $alias {
+            aliases(format!("{}\\{}", $dir.display(), $name), alias.clone())?;
+            println!("Success! You can now type `cdp general --vsc \":{}\"` to open it on Visual Studio Code.", alias);
+        } else {
+            println!("Success! You can now type `cdp general --vsc \"{}\\{}\"` to open it on Visual Studio Code.", $dir.display(), $name);
+        }
+    };
+}
+
+pub fn create_project(lang: Langs, name: String, alias: Option<String>) -> Result<(), CliErr> {
     let dir = [create_cdputils()?, "projects".to_string()].iter().collect::<PathBuf>();
-    fs::create_dir_all(&dir)?;
+    fs::create_dir_all(&dir)
+        .map_err(|e| {
+            CliErr::set_err(&e.to_string(), ErrKind::IoError)
+        })?;
 
     if cfg!(windows) {
         match lang {
@@ -42,12 +63,7 @@ pub fn create_project(lang: Langs, name: String, alias: Option<String>) -> Resul
                     .expect("Can not create the project");
                 
                 if status.success() {
-                    if let Some(alias) = alias {
-                        aliases(format!("{}\\{}", dir.display(), name), alias.clone())?;
-                        println!("Success! You can now type `cdp general --vsc --alias \"{}\"` to open it on Visual Studio Code.", alias);
-                    } else {
-                        println!("Success! You can now type `cdp general --vsc \"{}\\{}\"` to open it on Visual Studio Code.", dir.display(), name);
-                    }
+                    response!(alias, dir, name);
                 } else {
                     eprintln!("Can't create. {:?}", status.code())
                 }
@@ -82,7 +98,10 @@ pub fn create_project(lang: Langs, name: String, alias: Option<String>) -> Resul
             Langs::Js => {
                 let mut folder = PathBuf::from(&dir);
                 folder.push(&name);
-                fs::create_dir_all(&folder)?;
+                fs::create_dir_all(&folder)
+                    .map_err(|e| {
+                        CliErr::set_err(&e.to_string(), ErrKind::IoError)
+                    })?;
 
                 let status = Command::new("cmd")
                     .args(&[
@@ -94,16 +113,17 @@ pub fn create_project(lang: Langs, name: String, alias: Option<String>) -> Resul
                     .unwrap();
 
                 let file = [&folder.to_str().unwrap(), "app.js"].iter().collect::<PathBuf>();
-                let mut f = fs::File::create(file)?;
-                writeln!(f, "console.log(\"Created by cdp CLI\");")?;
+                let mut f = fs::File::create(file)
+                    .map_err(|e| {
+                        CliErr::set_err(&e.to_string(), ErrKind::IoError)
+                    })?;
+                writeln!(f, "console.log(\"Created by cdp CLI\");")
+                    .map_err(|e| {
+                        CliErr::set_err(&format!("Can't write to file: {e}"), ErrKind::IoError)
+                    })?;
 
                 if status.success() {
-                    if let Some(alias) = alias {
-                        aliases(format!("{}\\{}", dir.display(), name), alias.clone())?;
-                        println!("Success! You can now type `cdp general --vsc --alias \"{}\"` to open it on Visual Studio Code.", alias);
-                    } else {
-                        println!("Success! You can now type `cdp general --vsc \"{}\\{}\"` to open it on Visual Studio Code.", dir.display(), name);
-                    }
+                    response!(alias, dir, name);
                 } else {
                     eprintln!("Can't create. {:?}", status.code())
                 }
@@ -111,10 +131,16 @@ pub fn create_project(lang: Langs, name: String, alias: Option<String>) -> Resul
             Langs::Ts => {
                 let mut folder = PathBuf::from(&dir);
                 folder.push(&name);
-                fs::create_dir_all(&folder)?;
+                fs::create_dir_all(&folder)
+                    .map_err(|e| {
+                        CliErr::set_err(&e.to_string(), ErrKind::IoError)
+                    })?;
                 let mut src = PathBuf::from(&folder);
                 src.push("src");
-                fs::create_dir(&src)?;
+                fs::create_dir(&src)
+                    .map_err(|e| {
+                        CliErr::set_err(&e.to_string(), ErrKind::IoError)
+                    })?;
 
                 let process1 = Command::new("cmd")
                     .args(&[
@@ -144,17 +170,18 @@ pub fn create_project(lang: Langs, name: String, alias: Option<String>) -> Resul
                     .unwrap();
 
                 let file = [&src.to_str().unwrap(), "app.ts"].iter().collect::<PathBuf>();
-                let mut f = fs::File::create(file)?;
+                let mut f = fs::File::create(file)
+                    .map_err(|e| {
+                        CliErr::set_err(&e.to_string(), ErrKind::IoError)
+                    })?;
 
-                writeln!(f, "const message: string = \"Created by cdp CLI\";\nconsole.log(message);")?;
+                writeln!(f, "const message: string = \"Created by cdp CLI\";\nconsole.log(message);")
+                    .map_err(|e| {
+                        CliErr::set_err(&format!("Can't write to file: {e}"), ErrKind::IoError)
+                    })?;
 
                 if process1.success() && process2.success() && process3.success() {
-                    if let Some(alias) = alias {
-                        aliases(format!("{}\\{}", dir.display(), name), alias.clone())?;
-                        println!("Success! You can now type `cdp general --vsc --alias \"{}\"` to open it on Visual Studio Code.", alias);
-                    } else {
-                        println!("Success! You can now type `cdp general --vsc \"{}\\{}\"` to open it on Visual Studio Code.", dir.display(), name);
-                    }
+                    response!(alias, dir, name);
                 } else {
                     eprintln!("Can't create. Process 1:\n{:?}\nProcess 2:\n{:?}\nProcess 3:\n{:?}", process1.code(), process2.code(), process3.code())
                 }

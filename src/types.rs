@@ -24,7 +24,8 @@ pub enum Commands {
     #[command(alias="alias")]
     Aliases(AliasesCommand),
 
-    /// Create a project directory with the supported langs
+    /// Create a project directory with the supported langs.
+    /// It doesn't yet work on Unix
     #[command(alias="cp")]
     CreateProject(CPCommand),
 }
@@ -42,19 +43,20 @@ pub struct GeneralCommand {
     pub ls: bool,
 
     /// Open Visual Studio Code from the path
-    #[arg(long)]
+    #[arg(long, hide=true, conflicts_with="editor")]
     pub vsc: bool,
+
+    /// Open the editor from the path
+    #[arg(long, short='E')]
+    pub editor: Option<Editors>,
 
     #[cfg_attr(windows, doc = "Make the command start from `USER` ($HOME)")]
     #[cfg_attr(unix, doc = "Make the command start from `HOME` (~/)")]
-    /// CAN NOT BE USED WITH `--alias` FLAG
-    #[arg(short='C', long, conflicts_with="alias")]
+    #[arg(short='C', long, conflicts_with="alias", hide = true)]
     pub current_user: bool,
 
     /// Enable the `aliases mode` and let you type path aliases instead of whole paths (to create aliases: `cdp aliases --help`)
-    ///
-    /// CAN NOT BE USED WITH `--current-user` FLAG
-    #[arg(long, alias="al")]
+    #[arg(long, alias="al", hide = true)]
     pub alias: bool,
 }
 
@@ -85,6 +87,11 @@ pub struct CPCommand {
 
 
 // ------------------------------------------- ValueEnums
+#[derive(Debug, Clone, clap::ValueEnum)]
+pub enum Editors {
+    #[clap(alias="vscode")]
+    Vsc,
+}
 
 #[derive(Debug, Clone, clap::ValueEnum)]
 pub enum Langs {
@@ -101,16 +108,3 @@ pub enum Langs {
     #[clap(alias="c++")]
     Cpp,
 }
-
-// impl ToString for Langs {
-//     fn to_string(&self) -> String {
-//         match self {
-//             Self::Rs => "rs".to_string(),
-//             Self::C => "c".to_string(),
-//             Self::Cpp => "cpp".to_string(),
-//             Self::Py => "py".to_string(),
-//             Self::Ts => "ts".to_string(),
-//             Self::Js => "js".to_string(),
-//         }
-//     }
-// }

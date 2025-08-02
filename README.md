@@ -26,7 +26,7 @@ cdp [COMMAND]
 ### Example
 
 ```bash
-cdp g "dir-rust-tests" --ls -C
+cdp g "~/dir-rust-tests" --ls
 ```
 
 **Explanation**:
@@ -43,7 +43,7 @@ cdp g "dir-rust-tests" --ls -C
 * `--ls`
   List all files and folders inside the target directory.
 
-* `--current-user` or `-C`
+* `~/`
   Tell CDP to look inside the current user’s home folder (e.g. `C:\Users\CDPTester` or `/home/CDPTester`).
 
 ---

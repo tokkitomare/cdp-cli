@@ -1,15 +1,38 @@
 #![allow(unused)]
-// TODO: Make the Errors Kind
-// TODO: Display for CliErr and ErrKind
 
 use std::{
     error::Error as StdError,
     fmt::Display,
 };
 
+use crossterm::style::Stylize;
+
 #[derive(Debug)]
 pub enum ErrKind {
+    FileMissing,
+    DirMissing,
+    PermissionDenied,
+    InvalidData,
+    NotFound,
+    IoError,
+    Other(String),
+}
 
+impl Display for ErrKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let display: String;
+        match self {
+            Self::FileMissing => display = "The file is missing".to_string(),
+            Self::DirMissing => display = "The directory is missing".to_string(),
+            Self::PermissionDenied => display = "Permission denied".to_string(),
+            Self::InvalidData => display = "Invalid data".to_string(),
+            Self::NotFound => display = "Not found".to_string(),
+            Self::IoError => display = "Input/Output error".to_string(),
+            Self::Other(msg) => display = msg.clone(),
+        }
+        
+        writeln!(f, "{}", display)
+    }
 }
 
 #[derive(Debug)]
@@ -20,7 +43,7 @@ pub struct CliErr {
 
 impl Display for CliErr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!("Make the display for CliErr struct.");
+        writeln!(f, "{}:\n\tmessage: {}\n\tkind: {}", "CDP Error".red().bold(), self.message.clone().red(), self.kind)
     }
 }
 

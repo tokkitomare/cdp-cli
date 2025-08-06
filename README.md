@@ -1,56 +1,56 @@
-# CDP – CD Program
+<div align="center">
 
-**CDP** stands for **CD Program**, where `cd` refers to the directory‑changing command in Unix‑like shells and PowerShell.
+[<img src="images/cdplogo-nobg.png" width="144"/>](https://crates.io/crates/cdp-cli)
+
+<h1 align="center">CDP</h1>
+
+</p align="center">
+<strong>CDP stands for CD Program, where 'cd' refers to the directory‑changing command in Linux shells and PowerShell.
 
 This CLI helps you quickly navigate to a directory and perform useful operations on it.
+</strong>
+</p>
 
----
+[![cratesio](https://img.shields.io/crates/v/cdp-cli)](https://crates.io/crates/cdp-cli)
 
-## Supported OS
+</div>
+
+## 🖥️ Supported OS
 
 * Windows (PowerShell)
-* Unix‑like (Linux, macOS)
+* Linux
 
-## Supported Editors
+## 🛠️ Supported Editors
 
 * Visual Studio Code
 
 ---
 
-## Usage
+## 📦 Commands and Flags
 
-```bash
-cdp [COMMAND]
-```
+### general (`g`)
+- `--ls`
+- `--editor`, `-E`
 
-### Example
+### aliases (`alias`)
+- `--list`, `-l`, `--ls`
+- `--remove`, `-r`, `--rm`
+- `--edit`, `-e`
 
-```bash
-cdp g "~/dir-rust-tests" --ls
-```
-
-**Explanation**:
-
-* `g`
-  Alias for **general** (`cdp general --help`)
-
-* `dir-rust-tests`
-  The directory to locate. CDP will search in:
-
-  * `%USERPROFILE%\dir-rust-tests` on Windows
-  * `~/dir-rust-tests` on Unix‑like
-
-* `--ls`
-  List all files and folders inside the target directory.
-
-* `~/`
-  Tell CDP to look inside the current user’s home folder (e.g. `C:\Users\CDPTester` or `/home/CDPTester`).
+### create-project (`cp`)
+- `--alias`, `--al`
+- `--path`, `-p`
 
 ---
-To see all available options:
+
+## 📘 Help
+
+You can learn more about the commands, arguments, and flags with:
 
 ```bash
 cdp --help
 # or
 cdp -h
+# or
+cdp help
 ```

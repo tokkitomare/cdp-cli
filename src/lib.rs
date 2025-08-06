@@ -1,6 +1,7 @@
 mod handlers;
 mod types;
 mod utils;
+mod constants;
 
 use clap::CommandFactory;
 use crossterm::style::Stylize;
@@ -70,8 +71,25 @@ pub fn cli_run() -> Result<(), CliErr> {
             }
         },
         Some(Commands::Aliases(cmd)) => {
-            if let Err(e) = aliases::aliases(cmd.path, cmd.alias) {
-                eprintln!("{e}");
+            if let (Some(path), Some(alias)) = (cmd.path, cmd.alias) {
+                    if let Err(e) = aliases::aliases(path, alias) {
+                        eprintln!("{e}");
+                    }
+            }
+            if let Some(edit) = cmd.edit {
+                    if let Err(e) = edit::parse_response(edit) {
+                        eprintln!("{e}");
+                    }
+            }
+            if let Some(remove) = cmd.remove {
+                    if let Err(e) = remove::remove_alias(remove) {
+                        eprintln!("{e}");
+                    }
+            }
+            if cmd.list {
+                if let Err(e) = list::list_aliases() {
+                    eprintln!("{e}");
+                }
             }
         },
         Some(Commands::CreateProject(cmd)) => {
@@ -79,6 +97,7 @@ pub fn cli_run() -> Result<(), CliErr> {
                 cmd.lang,
                 cmd.name,
                 cmd.alias,
+                cmd.path,
             ) {
                 eprintln!("{e}");
             }

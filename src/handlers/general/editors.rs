@@ -15,7 +15,18 @@ pub fn open_editor(editor: Editors, path: String) -> Result<(), CliErr> {
             },
         }
     } else {
-        todo!("Make to Unix")
+        match editor {
+            Editors::Vsc => {
+                println!("Opening VS Code...");
+                std::process::Command::new("code")
+                    .current_dir(path)
+                    .arg(".")
+                    .spawn()
+                    .map_err(|e| {
+                        CliErr::set_err(&format!("Can't open VS Code: {e}"), ErrKind::Other("Process".to_string()))
+                    })?;
+            }
+        }
     }
 
     Ok(())

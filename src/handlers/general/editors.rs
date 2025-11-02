@@ -1,6 +1,6 @@
 use crate::{handlers::errors::{CliErr, ErrKind}, types::Editors};
 
-pub fn open_editor(editor: Editors, path: String) -> Result<(), CliErr> {
+pub fn open_editor(editor: Editors, path: impl AsRef<std::path::Path>) -> Result<(), CliErr> {
     if cfg!(windows) {
         match editor {
             Editors::Vsc => {

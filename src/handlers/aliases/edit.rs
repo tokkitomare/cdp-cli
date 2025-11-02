@@ -2,7 +2,7 @@ use std::{fs, io::Write, path::Path};
 
 use crossterm::style::Stylize;
 
-use crate::handlers::errors::{CliErr, ErrKind};
+use crate::{handlers::errors::{CliErr, ErrKind}, utils::setup::create_cdpaliases::create_cdpaliases};
 
 struct Update {
     new_alias: Option<String>,
@@ -13,10 +13,8 @@ pub fn parse_response(arg: String) -> Result<(), CliErr> {
     let arg = arg.trim();
 
     if arg.starts_with("(") && arg.ends_with(")") {
-        let home = dirs::home_dir().ok_or_else(|| CliErr::set_err("No home dir", ErrKind::DirMissing))?;
-        let path = format!("{}/.cdputils/cdpaliases.txt", home.display());
-        let path = Path::new(&path);
-        let content = fs::read_to_string(path)
+        let path = create_cdpaliases()?;
+        let content = fs::read_to_string(&path)
             .map_err(|e| CliErr::set_err(&format!("Can't read file: {}", e), ErrKind::FileMissing))?;
 
         let parts = split_first(arg);
@@ -59,7 +57,7 @@ pub fn parse_response(arg: String) -> Result<(), CliErr> {
             _ => None,
         };
 
-        upd_line(path, &identifier, Update { new_alias, new_path })?;
+        upd_line(Path::new(&path), &identifier, Update { new_alias, new_path })?;
         println!("{}", "Changes:".on_green().white());
         if parts[1] != "." {
             println!("{} to {}", parts[0].yellow(), parts[1].green());

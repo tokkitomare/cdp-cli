@@ -1,19 +1,13 @@
 use std::{fs, io::Write};
 
-use crate::{handlers::errors::{CliErr, ErrKind}, utils::create_cdputils::create_cdputils};
+use crate::{handlers::errors::{CliErr, ErrKind}, utils::setup::create_cdpaliases::create_cdpaliases};
 
 pub fn aliases(path: String, alias: String) -> Result<(), CliErr> {
-    let dir = create_cdputils()?;
-    let format = &format!("{}/cdpaliases.txt", dir);
-    let alias_path = std::path::Path::new(format);
-
-    if !alias_path.exists() {
-        fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .open(alias_path)
-            .map_err(|e| CliErr::set_err(&format!("Can't create the file: {e}"), ErrKind::IoError))?;
+    if path.is_empty() || alias.is_empty() {
+        return Err(CliErr::set_err("Path/alias cannot be empty", ErrKind::InvalidData));
     }
+
+    let alias_path = create_cdpaliases()?;
 
     let content = fs::read_to_string(&alias_path)
         .map_err(|e| CliErr::set_err(&format!("Can't read to string: {e}"), ErrKind::IoError))?
@@ -23,13 +17,13 @@ pub fn aliases(path: String, alias: String) -> Result<(), CliErr> {
 
     if content {
         let mut file = fs::File::options()
-                .create(true)
-                .append(true)
-                .open(alias_path)
-                .map_err(|e| {
-                    CliErr::set_err(&format!("Can't open: {e}"), ErrKind::IoError)
-                })?;
-        writeln!(file, "{};{}", alias, path)
+            .create(true)
+            .append(true)
+            .open(alias_path)
+            .map_err(|e| {
+                CliErr::set_err(&format!("Can't open: {e}"), ErrKind::IoError)
+            })?;
+        writeln!(file, "{};{}", alias, path.replace(r"\", "/"))
             .map_err(|e| {
                 CliErr::set_err(&format!("Can't write to file: {e}"), ErrKind::IoError)
             })?;

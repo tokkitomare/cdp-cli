@@ -2,11 +2,11 @@ use std::{fs, io::Write};
 
 use crossterm::style::Stylize;
 
-use crate::{constants, handlers::errors::{CliErr, ErrKind}};
+use crate::{handlers::errors::{CliErr, ErrKind}, utils::setup::create_cdpaliases::create_cdpaliases};
 
 pub fn remove_alias(identifier: String) -> Result<(), CliErr> {
-    let path = std::path::Path::new(constants::CDPALIASES.as_ref().unwrap());
-    let content = fs::read_to_string(path)
+    let path = create_cdpaliases()?;
+    let content = fs::read_to_string(&path)
         .map_err(|e| CliErr::set_err(&format!("Can't read: {e}"), ErrKind::FileMissing))?;
     let format = format!("{};", identifier);
     let exist = content
@@ -28,7 +28,7 @@ pub fn remove_alias(identifier: String) -> Result<(), CliErr> {
         }
     }
 
-    let tmp = path.with_extension("tmp");
+    let tmp = std::path::Path::new(&path).with_extension("tmp");
     {
         let mut tmp = fs::File::create(&tmp)
             .map_err(|e| CliErr::set_err(&e.to_string(), ErrKind::IoError))?;

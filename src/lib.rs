@@ -1,21 +1,29 @@
 mod handlers;
 mod types;
 mod utils;
-mod constants;
 
 use clap::CommandFactory;
 use crossterm::style::Stylize;
 use types::*;
 use handlers::{
-    general::*, aliases::*, create_project::*,
+    general::*, 
+    aliases::*, 
+    create_project::*, 
+    command_aliases::*, 
+    errors::CliErr
 };
 
-use crate::{handlers::errors::CliErr, utils::parse_path};
+use crate::utils::parse_path;
 
 pub fn cli_run() -> Result<(), CliErr> {
     let args = Cli::parse();
 
     match args.command {
+        Some(Commands::Setup(cmd)) => {
+            if let Err(e) = handlers::setup::setup(cmd.verbose) {
+                eprintln!("{e}");
+            }
+        },
         Some(Commands::General(cmd)) => {
             let path = match parse_path::parse_path(cmd.path.clone()) {
                 Ok(s) => s,
@@ -46,7 +54,7 @@ pub fn cli_run() -> Result<(), CliErr> {
                     "--alias".red(), 
                     "--al".red(),
                     ":".green(),
-                    ":cdpproject/src/parse_path.rs".green()
+                    ":cdpproject/src".green()
                 );
             }
             if cmd.ls {
@@ -72,19 +80,19 @@ pub fn cli_run() -> Result<(), CliErr> {
         },
         Some(Commands::Aliases(cmd)) => {
             if let (Some(path), Some(alias)) = (cmd.path, cmd.alias) {
-                    if let Err(e) = aliases::aliases(path, alias) {
-                        eprintln!("{e}");
-                    }
+                if let Err(e) = aliases::aliases(path, alias) {
+                    eprintln!("{e}");
+                }
             }
             if let Some(edit) = cmd.edit {
-                    if let Err(e) = edit::parse_response(edit) {
-                        eprintln!("{e}");
-                    }
+                if let Err(e) = edit::parse_response(edit) {
+                    eprintln!("{e}");
+                }
             }
             if let Some(remove) = cmd.remove {
-                    if let Err(e) = remove::remove_alias(remove) {
-                        eprintln!("{e}");
-                    }
+                if let Err(e) = remove::remove_alias(remove) {
+                    eprintln!("{e}");
+                }
             }
             if cmd.list {
                 if let Err(e) = list::list_aliases() {
@@ -100,6 +108,33 @@ pub fn cli_run() -> Result<(), CliErr> {
                 cmd.path,
             ) {
                 eprintln!("{e}");
+            }
+        },
+        Some(Commands::CommandAliases(cmd)) => {
+            if let (Some(command), Some(alias)) = (cmd.cmd, cmd.alias) {
+                if let Err(e) = cmd_aliases::cmd_aliases(command, alias) {
+                    eprintln!("{e}");
+                }
+            }
+            if let Some(exe) = cmd.execute {
+                if let Err(e) = execute::execute_alias(exe) {
+                    eprintln!("{e}");
+                }
+            }
+            if cmd.list {
+                if let Err(e) = cmd_list::list_cmd_aliases() {
+                    eprintln!("{e}");
+                }
+            }
+            if let Some(edit) = cmd.edit {
+                if let Err(e) = edit_cmd::parse_response(edit) {
+                    eprintln!("{e}");
+                }
+            }
+            if let Some(remove) = cmd.remove {
+                if let Err(e) = remove_cmd::remove_alias(remove) {
+                    eprintln!("{e}");
+                }
             }
         },
         None => { Cli::command().print_help().unwrap(); std::process::exit(1); }

@@ -2,9 +2,7 @@
 
 [<img src="images/cdplogo-nobg.png" width="144"/>](https://crates.io/crates/cdp-cli)
 
-<h1 align="center">CDP</h1>
-
-</p align="center">
+<p align="center">
 <strong>CDP stands for CD Program, where 'cd' refers to the directory‑changing command in Linux shells and PowerShell.
 
 This CLI helps you quickly navigate to a directory and perform useful operations on it.
@@ -17,8 +15,8 @@ This CLI helps you quickly navigate to a directory and perform useful operations
 
 ## 🖥️ Supported OS
 
-* Windows (PowerShell)
-* Linux
+* Windows (full support) 
+* Linux (some commands may not work when features are newly added)
 
 ## 🛠️ Supported Editors
 
@@ -26,31 +24,13 @@ This CLI helps you quickly navigate to a directory and perform useful operations
 
 ---
 
-## 📦 Commands and Flags
-
-### general (`g`)
-- `--ls`
-- `--editor`, `-E`
-
-### aliases (`alias`)
-- `--list`, `-l`, `--ls`
-- `--remove`, `-r`, `--rm`
-- `--edit`, `-e`
-
-### create-project (`cp`)
-- `--alias`, `--al`
-- `--path`, `-p`
-
----
-
 ## 📘 Help
 
-You can learn more about the commands, arguments, and flags with:
+You can learn about the commands, arguments, and flags with:
 
 ```bash
 cdp --help
-# or
 cdp -h
-# or
 cdp help
+cdp
 ```

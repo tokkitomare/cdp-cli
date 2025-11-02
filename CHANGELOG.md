@@ -1,5 +1,5 @@
 <div align="center">
-    <span style="font-size: 2em; font-weight: bold; vertical-align: middle;">cdp-cli: 0.3.0</span>
+    <span style="font-size: 2em; font-weight: bold; vertical-align: middle;">cdp-cli: 0.4.0</span>
     <img src="images/cdplogo-nobg.png" width="50" style="vertical-align: middle;" />
 </div>
 
@@ -7,21 +7,26 @@
 
 **What's new?**
 
-* **`aliases` command**
-  * Added 3 new flags:
+* **`setup` command created**
+  * Flags:
+    * `--verbose`, `-v`
+  * Run `cdp setup -h` for usage details.
+
+* **`command-aliases` command created**
+  * Flags:
+    * `--execute`, `-E`, `--exe`
     * `--list`, `-l`, `--ls`
     * `--edit`, `-e`,
     * `--remove`, `-r`, `--rm`
-  * Run `cdp aliases -h` or `cdp alias -h` for usage details.
-
-* **`create-project` command**
-  * Added a new flag:
-    * `--path`, `-p`
-  * Run `cdp create-project -h` or `cdp cp -h` for usage details.
+  * Run `cdp command-aliases -h`, `cdp cmdal -h` or `cdp cmd-alias -h` for usage details.
 
 ---
 
 **What was changed?**
 
-* **`aliases` command**
-  * The arguments `<PATH>` and `<ALIAS>` are now optional.
+* **Path parsing system**
+  * Now fully supports **relative path**.
+    * Examples: `../:cdp`, `:cdp/src`, `../../:cdp/src`
+
+* **Command handlers**
+  * Optimization in handlers that required the CDP utilities folder (`/.cdputils`).

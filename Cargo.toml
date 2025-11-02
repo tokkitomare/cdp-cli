@@ -1,6 +1,6 @@
 [package]
 name = "cdp-cli"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 license = "MIT"
 authors = ["tokkitomare"]
@@ -8,7 +8,7 @@ description = "CDP - This CLI helps you quickly navigate to a directory and perf
 repository = "https://github.com/tokkitomare/cdp-cli"
 readme = "README.md"
 keywords = ["cli", "cdp", "cdprogram", "useful"]
-categories = ["command-line-interface"]
+categories = ["command-line-utilities"]
 exclude = ["tests/*", "images/*"]
 
 [[bin]]

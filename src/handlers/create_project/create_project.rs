@@ -1,8 +1,8 @@
 use crate::handlers::aliases::aliases::aliases;
 use crate::handlers::errors::{CliErr, ErrKind};
 use crate::types::Langs;
-use crate::utils::create_cdputils::create_cdputils;
 use crate::utils::parse_path::parse_path;
+use crate::utils::setup::create_projects;
 use std::process::Command;
 use std::{fs, io::Write, path::PathBuf};
 
@@ -45,11 +45,12 @@ macro_rules! response {
 
 pub fn create_project(lang: Langs, name: String, alias: Option<String>, path: Option<String>) -> Result<(), CliErr> {
     let dir = if path.is_none() {
-        [create_cdputils()?, "projects".to_string()].iter().collect::<PathBuf>()
+        create_projects::create_projects()?
     } else {
-        let path = parse_path(path.unwrap())?;
-        PathBuf::from(path)
+        parse_path(path.unwrap())?
     };
+
+    let dir = PathBuf::from(dir);
 
     fs::create_dir_all(&dir)
         .map_err(|e| {

@@ -50,9 +50,9 @@ impl Display for CliErr {
 impl StdError for CliErr {}
 
 impl CliErr {
-    pub fn set_err(msg: &str, kind: ErrKind) -> Self {
+    pub fn set_err(msg: impl AsRef<str>, kind: ErrKind) -> Self {
         Self {
-            message: msg.to_owned(),
+            message: msg.as_ref().to_owned(),
             kind,
         }
     }
